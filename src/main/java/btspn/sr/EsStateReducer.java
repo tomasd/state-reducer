@@ -10,6 +10,10 @@ public interface EsStateReducer<S, Ctx> extends Function4<EventStore, Supplier<C
     }
 
     static <S, Ctx> EsStateReducer<S, Ctx> cmd(CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn) {
-        return new CommandStateReducer<>(cmdFn, eventFn);
+        return cmd(cmdFn, eventFn, null);
+    }
+
+    static <S, Ctx> EsStateReducer<S, Ctx> cmd(CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn, Integer snapshotEach) {
+        return new CommandStateReducer<>(cmdFn, eventFn, snapshotEach);
     }
 }

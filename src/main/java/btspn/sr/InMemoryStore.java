@@ -1,5 +1,7 @@
 package btspn.sr;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.collection.List;
 
 import java.util.HashMap;
@@ -7,24 +9,36 @@ import java.util.Map;
 
 public class InMemoryStore implements EventStore {
     private final Map<Object, List> map;
+    private final Map<Object, Tuple2<Integer, Object>> snapshots;
 
-    private InMemoryStore(Map<Object, List> map) {
+    private InMemoryStore(Map<Object, List> map, Map<Object, Tuple2<Integer, Object>> snapshots) {
         this.map = map;
+        this.snapshots = snapshots;
     }
 
     public static EventStore empty() {
-        return new InMemoryStore(new HashMap<>());
+        return new InMemoryStore(new HashMap<>(), new HashMap<>());
     }
 
     @Override
-    public List events(Object id) {
-        return map.getOrDefault(id, List.empty());
+    public List events(Object id, int sinceVersion) {
+        return map.getOrDefault(id, List.empty()).subSequence(sinceVersion);
     }
 
     @Override
-    public void record(Object id, List events) {
+    public void record(Object id, List events, Tuple2<Integer, Object> snapshot) {
         map.compute(id, (o, list) -> {
             return (list != null ? list : List.empty()).appendAll(events);
         });
+
+        if (snapshot != null) {
+            snapshots.put(id, snapshot);
+        }
     }
+
+    @Override
+    public Tuple2<Integer, Object> lastSnapshot(Object id) {
+        return snapshots.getOrDefault(id, Tuple.of(0, null));
+    }
+
 }

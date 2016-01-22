@@ -2,6 +2,7 @@ package btspn.sr;
 
 import javaslang.Function1;
 import javaslang.Function2;
+import javaslang.Tuple;
 import javaslang.collection.List;
 import org.testng.annotations.Test;
 
@@ -24,6 +25,20 @@ public class StateReducerTest {
         public Person(String firstName, String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Person person = (Person) o;
+            return Objects.equals(firstName, person.firstName) &&
+                    Objects.equals(lastName, person.lastName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(firstName, lastName);
         }
     }
 
@@ -105,7 +120,8 @@ public class StateReducerTest {
                         ,
                         Dispatch.<Person, State>event()
                                 .put(PersonCreated.class, ep(StateReducerTest::personCreated))
-                                .put(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)))
+                                .put(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
+                        1)
                 .apply(eventStore, State::new);
 
         sr.apply(1, new CreatePerson("Jane", "Doe"));
@@ -113,6 +129,7 @@ public class StateReducerTest {
         assertEquals(newPerson.firstName, "John");
         assertEquals(newPerson.lastName, "Doe");
         assertEquals(List.of(new PersonCreated("Jane", "Doe"), new FirstNameChanged("John")), eventStore.events(1));
+        assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", "Doe")));
     }
 
 

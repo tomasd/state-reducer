@@ -1,9 +1,21 @@
 package btspn.sr;
 
+import javaslang.Tuple2;
 import javaslang.collection.List;
 
 public interface EventStore {
-    List events(Object id);
+    List events(Object id, int sinceVersion);
 
-    void record(Object id, List events);
+    default List events(Object id) {
+        return events(id, 0);
+    }
+
+    default void record(Object id, List events) {
+        record(id, events, null);
+    }
+
+    void record(Object id, List events, Tuple2<Integer, Object> snapshot);
+
+    Tuple2<Integer, Object> lastSnapshot(Object id);
+
 }

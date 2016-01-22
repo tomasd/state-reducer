@@ -44,6 +44,10 @@ public class Dispatch {
         return ClassEsStateReducingDispatcher.<S, Ctx>create(EsStateReducer.cmd(cmdFn, eventFn));
     }
 
+    public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn, Integer snapshotEach) {
+        return ClassEsStateReducingDispatcher.<S, Ctx>create(EsStateReducer.cmd(cmdFn, eventFn, snapshotEach));
+    }
+
     public static class ClassEventDispatcher<S, Ctx> implements EventFunction<Object, S, Ctx> {
         private final Map<Class, EventFunction> map;
         private final EventFunction defaultHandler;
