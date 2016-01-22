@@ -4,6 +4,8 @@ import javaslang.collection.HashMap;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 
+import java.util.function.Supplier;
+
 public class Dispatch {
     public static <S, Ctx> ClassEventDispatcher<S, Ctx> event() {
         return ClassEventDispatcher.<S, Ctx>create();
@@ -124,7 +126,7 @@ public class Dispatch {
         }
 
         @Override
-        public S apply(Holder<S> holder, Ctx ctx, Object command) {
+        public S apply(Holder<S> holder, Supplier<Ctx> ctx, Object command) {
             StateReducer<S, Ctx> handler = map.get(command.getClass()).orElse(defaultHandler);
             if (handler == null) {
                 throw new IllegalArgumentException("Handler not defined for " + command.getClass());
@@ -160,7 +162,7 @@ public class Dispatch {
         }
 
         @Override
-        public S apply(EventStore eventStore, Ctx ctx, Object id, Object command) {
+        public S apply(EventStore eventStore, Supplier<Ctx> ctx, Object id, Object command) {
             EsStateReducer<S, Ctx> handler = map.get(command.getClass()).orElse(defaultHandler);
             if (handler == null) {
                 throw new IllegalArgumentException("Handler not defined for " + command.getClass());

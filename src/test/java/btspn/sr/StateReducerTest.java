@@ -84,7 +84,7 @@ public class StateReducerTest {
                 Dispatch.<Person, State>event()
                         .put(ChangeFirstName.class,
                                 ep(StateReducerTest::changeFirstName)))
-                .apply(holder, new State());
+                .apply(holder, State::new);
 
         Person newPerson = sr.apply(new ChangeFirstName("John"));
         assertEquals(newPerson.firstName, "John");
@@ -106,7 +106,7 @@ public class StateReducerTest {
                         Dispatch.<Person, State>event()
                                 .put(PersonCreated.class, ep(StateReducerTest::personCreated))
                                 .put(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)))
-                .apply(eventStore, new State());
+                .apply(eventStore, State::new);
 
         sr.apply(1, new CreatePerson("Jane", "Doe"));
         Person newPerson = sr.apply(1, new ChangeFirstName("John"));
