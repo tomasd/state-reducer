@@ -66,7 +66,7 @@ public class Dispatch {
             return handler.apply(event, s0, sN, ctx);
         }
 
-        public <E> ClassEventDispatcher<S, Ctx> put(Class<E> clazz, EventFunction<E, S, Ctx> fn) {
+        public <E> ClassEventDispatcher<S, Ctx> on(Class<E> clazz, EventFunction<E, S, Ctx> fn) {
             return new ClassEventDispatcher<>(map.put(clazz, fn), defaultHandler);
         }
 
@@ -103,7 +103,7 @@ public class Dispatch {
             return handler.apply(cmd, s0, sN, ctx);
         }
 
-        public <C> ClassCommandDispatcher<S, Ctx> put(Class<C> clazz, CommandFunction<C, S, Ctx> fn) {
+        public <C> ClassCommandDispatcher<S, Ctx> on(Class<C> clazz, CommandFunction<C, S, Ctx> fn) {
             return new ClassCommandDispatcher<>(map.put(clazz, fn), defaultHandler);
         }
 
@@ -138,7 +138,7 @@ public class Dispatch {
             return handler.apply(holder, ctx, command);
         }
 
-        public ClassStateReducingDispatcher<S, Ctx> put(Class<?> clazz, StateReducer<S, Ctx> fn) {
+        public ClassStateReducingDispatcher<S, Ctx> on(Class<?> clazz, StateReducer<S, Ctx> fn) {
             return new ClassStateReducingDispatcher<>(map.put(clazz, fn), defaultHandler);
         }
 
@@ -174,7 +174,7 @@ public class Dispatch {
             return handler.apply(eventStore, ctx, id, command);
         }
 
-        public ClassEsStateReducingDispatcher<S, Ctx> put(Class<?> clazz, EsStateReducer<S, Ctx> fn) {
+        public ClassEsStateReducingDispatcher<S, Ctx> on(Class<?> clazz, EsStateReducer<S, Ctx> fn) {
             return new ClassEsStateReducingDispatcher<>(map.put(clazz, fn), defaultHandler);
         }
 

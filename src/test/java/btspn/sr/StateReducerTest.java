@@ -97,7 +97,7 @@ public class StateReducerTest {
         Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
         Function1<Object, Person> sr = Dispatch.<Person, State>state(
                 Dispatch.<Person, State>event()
-                        .put(ChangeFirstName.class,
+                        .on(ChangeFirstName.class,
                                 ep(StateReducerTest::changeFirstName)))
                 .apply(holder, State::new);
 
@@ -115,12 +115,13 @@ public class StateReducerTest {
         Function2<Object, Object, Person> sr = Dispatch
                 .<Person, State>esState(
                         Dispatch.<Person, State>cmd()
-                                .put(CreatePerson.class, cp(StateReducerTest::createPerson))
-                                .put(ChangeFirstName.class, cp(StateReducerTest::changeFirstNameEvent))
+                                .on(CreatePerson.class, cp(StateReducerTest::createPerson))
+                                .on(ChangeFirstName.class, cp(StateReducerTest::changeFirstNameEvent))
+
                         ,
                         Dispatch.<Person, State>event()
-                                .put(PersonCreated.class, ep(StateReducerTest::personCreated))
-                                .put(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
+                                .on(PersonCreated.class, ep(StateReducerTest::personCreated))
+                                .on(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
                         1)
                 .apply(eventStore, State::new);
 
