@@ -1,7 +1,5 @@
 package btspn.sr;
 
-import javaslang.Function1;
-import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import org.testng.annotations.Test;
@@ -95,13 +93,12 @@ public class StateReducerTest {
 
 
         Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
-        Function1<Object, Person> sr = Dispatch.<Person, State>state(
+        Dispatch.ClassStateReducingDispatcher<Person, State> sr = Dispatch.state(
                 Dispatch.<Person, State>event()
                         .on(ChangeFirstName.class,
-                                ep(StateReducerTest::changeFirstName)))
-                .apply(holder, State::new);
+                                ep(StateReducerTest::changeFirstName)));
 
-        Person newPerson = sr.apply(new ChangeFirstName("John"));
+        Person newPerson = sr.apply(holder, State::new, new ChangeFirstName("John"));
         assertEquals(newPerson.firstName, "John");
         assertEquals(newPerson.lastName, "Doe");
         assertSame(newPerson, holder.get());
@@ -110,10 +107,9 @@ public class StateReducerTest {
     @Test
     public void testCmd() throws Exception {
         EventStore eventStore = InMemoryStore.empty();
-        Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
 
-        Function2<Object, Object, Person> sr = Dispatch
-                .<Person, State>esState(
+        Dispatch.ClassEsStateReducingDispatcher<Person, State> sr = Dispatch
+                .esState(
                         Dispatch.<Person, State>cmd()
                                 .on(CreatePerson.class, cp(StateReducerTest::createPerson))
                                 .on(ChangeFirstName.class, cp(StateReducerTest::changeFirstNameEvent))
@@ -122,11 +118,10 @@ public class StateReducerTest {
                         Dispatch.<Person, State>event()
                                 .on(PersonCreated.class, ep(StateReducerTest::personCreated))
                                 .on(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
-                        1)
-                .apply(eventStore, State::new);
+                        1);
 
-        sr.apply(1, new CreatePerson("Jane", "Doe"));
-        Person newPerson = sr.apply(1, new ChangeFirstName("John"));
+        sr.apply(eventStore, State::new, 1, new CreatePerson("Jane", "Doe"));
+        Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));
         assertEquals(newPerson.firstName, "John");
         assertEquals(newPerson.lastName, "Doe");
         assertEquals(List.of(new PersonCreated("Jane", "Doe"), new FirstNameChanged("John")), eventStore.events(1));

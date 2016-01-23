@@ -8,44 +8,44 @@ import java.util.function.Supplier;
 
 public class Dispatch {
     public static <S, Ctx> ClassEventDispatcher<S, Ctx> event() {
-        return ClassEventDispatcher.<S, Ctx>create();
+        return new ClassEventDispatcher<>(HashMap.empty(), null);
     }
 
     public static <S, Ctx> ClassEventDispatcher<S, Ctx> event(EventFunction<Object, S, Ctx> defaultHandler) {
-        return ClassEventDispatcher.<S, Ctx>create(defaultHandler);
+        return new ClassEventDispatcher<>(defaultHandler);
     }
 
     public static <S, Ctx> ClassCommandDispatcher<S, Ctx> cmd() {
-        return ClassCommandDispatcher.<S, Ctx>create();
+        return new ClassCommandDispatcher<>();
     }
 
     public static <S, Ctx> ClassCommandDispatcher<S, Ctx> cmd(CommandFunction<Object, S, Ctx> defaultHandler) {
-        return ClassCommandDispatcher.<S, Ctx>create(defaultHandler);
+        return new ClassCommandDispatcher<>(defaultHandler);
     }
 
 
     public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> state() {
-        return ClassStateReducingDispatcher.<S, Ctx>create();
+        return new ClassStateReducingDispatcher<>();
     }
 
     public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> state(StateReducer<S, Ctx> defaultHandler) {
-        return ClassStateReducingDispatcher.<S, Ctx>create(defaultHandler);
+        return new ClassStateReducingDispatcher<>(defaultHandler);
     }
 
     public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> state(EventFunction<?, S, Ctx> eventFn) {
-        return ClassStateReducingDispatcher.<S, Ctx>create(StateReducer.event(eventFn));
+        return new ClassStateReducingDispatcher<>(HashMap.empty(), StateReducer.event(eventFn));
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState() {
-        return ClassEsStateReducingDispatcher.<S, Ctx>create();
+        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), null);
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn) {
-        return ClassEsStateReducingDispatcher.<S, Ctx>create(EsStateReducer.cmd(cmdFn, eventFn));
+        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.cmd(cmdFn, eventFn));
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn, Integer snapshotEach) {
-        return ClassEsStateReducingDispatcher.<S, Ctx>create(EsStateReducer.cmd(cmdFn, eventFn, snapshotEach));
+        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.cmd(cmdFn, eventFn, snapshotEach));
     }
 
     public static class ClassEventDispatcher<S, Ctx> implements EventFunction<Object, S, Ctx> {
@@ -55,6 +55,10 @@ public class Dispatch {
         private ClassEventDispatcher(Map<Class, EventFunction> map, EventFunction defaultHandler) {
             this.map = map;
             this.defaultHandler = defaultHandler;
+        }
+
+        public ClassEventDispatcher(EventFunction<Object, S, Ctx> defaultHandler) {
+            this(HashMap.empty(), defaultHandler);
         }
 
         @Override
@@ -73,16 +77,6 @@ public class Dispatch {
         public <E> ClassEventDispatcher<S, Ctx> orElse(EventFunction<E, S, Ctx> fn) {
             return new ClassEventDispatcher<>(map, fn);
         }
-
-        public static <S, Ctx> ClassEventDispatcher<S, Ctx> create(EventFunction<Object, S, Ctx> defaultHandler) {
-            return new ClassEventDispatcher<>(HashMap.empty(), defaultHandler);
-        }
-
-        public static <S, Ctx> ClassEventDispatcher<S, Ctx> create() {
-            return new ClassEventDispatcher<>(HashMap.empty(), null);
-        }
-
-
     }
 
     public static class ClassCommandDispatcher<S, Ctx> implements CommandFunction<Object, S, Ctx> {
@@ -93,6 +87,15 @@ public class Dispatch {
             this.map = map;
             this.defaultHandler = defaultHandler;
         }
+
+        private ClassCommandDispatcher() {
+            this(HashMap.empty(), null);
+        }
+
+        public ClassCommandDispatcher(CommandFunction<Object, S, Ctx> defaultHandler) {
+            this(HashMap.empty(), defaultHandler);
+        }
+
 
         @Override
         public List apply(Object cmd, S s0, S sN, Ctx ctx) {
@@ -110,23 +113,23 @@ public class Dispatch {
         public <C> ClassCommandDispatcher<S, Ctx> orElse(CommandFunction<Object, S, Ctx> fn) {
             return new ClassCommandDispatcher<>(map, fn);
         }
-
-        public static <S, Ctx> ClassCommandDispatcher<S, Ctx> create(CommandFunction<Object, S, Ctx> defaultHandler) {
-            return new ClassCommandDispatcher<>(HashMap.empty(), defaultHandler);
-        }
-
-        public static <S, Ctx> ClassCommandDispatcher<S, Ctx> create() {
-            return new ClassCommandDispatcher<>(HashMap.empty(), null);
-        }
     }
 
     public static class ClassStateReducingDispatcher<S, Ctx> implements StateReducer<S, Ctx> {
         private final Map<Class, StateReducer> map;
         private final StateReducer defaultHandler;
 
-        private ClassStateReducingDispatcher(Map<Class, StateReducer> map, StateReducer defaultHandler) {
+        private ClassStateReducingDispatcher(Map<Class, StateReducer> map, StateReducer<S, Ctx> defaultHandler) {
             this.map = map;
             this.defaultHandler = defaultHandler;
+        }
+
+        public ClassStateReducingDispatcher() {
+            this(HashMap.empty(), null);
+        }
+
+        public ClassStateReducingDispatcher(StateReducer<S, Ctx> defaultHandler) {
+            this(HashMap.empty(), defaultHandler);
         }
 
         @Override
@@ -145,15 +148,6 @@ public class Dispatch {
         public ClassStateReducingDispatcher<S, Ctx> orElse(StateReducer<S, Ctx> fn) {
             return new ClassStateReducingDispatcher<>(map, fn);
         }
-
-        public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> create(StateReducer<S, Ctx> defaultHandler) {
-            return new ClassStateReducingDispatcher<>(HashMap.empty(), defaultHandler);
-        }
-
-        public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> create() {
-            return new ClassStateReducingDispatcher<>(HashMap.empty(), null);
-        }
-
     }
 
     public static class ClassEsStateReducingDispatcher<S, Ctx> implements EsStateReducer<S, Ctx> {
@@ -180,14 +174,6 @@ public class Dispatch {
 
         public ClassEsStateReducingDispatcher<S, Ctx> orElse(EsStateReducer<S, Ctx> fn) {
             return new ClassEsStateReducingDispatcher<>(map, fn);
-        }
-
-        public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> create(EsStateReducer<S, Ctx> defaultHandler) {
-            return new ClassEsStateReducingDispatcher<>(HashMap.empty(), defaultHandler);
-        }
-
-        public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> create() {
-            return new ClassEsStateReducingDispatcher<>(HashMap.empty(), null);
         }
 
     }
