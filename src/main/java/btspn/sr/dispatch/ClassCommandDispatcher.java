@@ -1,11 +1,13 @@
 package btspn.sr.dispatch;
 
 import btspn.sr.CommandFunction;
+import btspn.sr.EventFunction;
+import javaslang.Tuple2;
 import javaslang.collection.HashMap;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 
-public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<Object, S, Ctx> {
+public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<Object,S,Ctx> {
     private final Map<Class, CommandFunction> map;
     private final CommandFunction defaultHandler;
 
@@ -24,12 +26,12 @@ public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<Object, S
 
 
     @Override
-    public List apply(Object cmd, S s0, S sN, Ctx ctx) {
+    public Tuple2<List, S> apply(Object cmd, S s0, S sN, Ctx ctx, EventFunction<Object, S, Ctx> player) {
         CommandFunction<Object, S, Ctx> handler = map.get(cmd.getClass()).orElse(defaultHandler);
         if (handler == null) {
             throw new IllegalArgumentException("Handler not defined for " + cmd.getClass());
         }
-        return handler.apply(cmd, s0, sN, ctx);
+        return handler.apply(cmd, s0, sN, ctx, player);
     }
 
     public <C> ClassCommandDispatcher<S, Ctx> on(Class<C> clazz, CommandFunction<C, S, Ctx> fn) {

@@ -37,8 +37,8 @@ public class InMemoryStore implements EventStore {
     }
 
     @Override
-    public Tuple2<Integer, Object> lastSnapshot(Object id) {
-        return snapshots.getOrDefault(id, Tuple.of(0, null));
+    public <S> Tuple2<Integer, S> lastSnapshot(Object id) {
+        return (Tuple2<Integer, S>) snapshots.getOrDefault(id, Tuple.of(0, null));
     }
 
 }

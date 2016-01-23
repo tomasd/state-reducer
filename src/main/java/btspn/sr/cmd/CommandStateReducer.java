@@ -10,11 +10,11 @@ import javaslang.collection.List;
 import java.util.function.Supplier;
 
 public class CommandStateReducer<S, Ctx> implements EsStateReducer<S, Ctx> {
-    private final CommandFunction cmdHandler;
-    private final EventFunction eventHandler;
+    private final CommandFunction<Object, S, Ctx> cmdHandler;
+    private final EventFunction<Object, S, Ctx> eventHandler;
     private final Integer unsnapshottedEvents;
 
-    public CommandStateReducer(CommandFunction cmdHandler, EventFunction eventHandler, Integer unsnapshottedEvents) {
+    public CommandStateReducer(CommandFunction<Object, S, Ctx> cmdHandler, EventFunction<Object, S, Ctx> eventHandler, Integer unsnapshottedEvents) {
         this.cmdHandler = cmdHandler;
         this.eventHandler = eventHandler;
         this.unsnapshottedEvents = unsnapshottedEvents;
@@ -23,16 +23,16 @@ public class CommandStateReducer<S, Ctx> implements EsStateReducer<S, Ctx> {
     @Override
     public S apply(EventStore eventStore, Supplier<Ctx> ctx, Object id, Object cmd) {
         Ctx ctx1 = ctx.get();
-        Tuple2<Integer, Object> snapshot = eventStore.lastSnapshot(id);
+        Tuple2<Integer, S> snapshot = eventStore.lastSnapshot(id);
         List headEvents = eventStore.events(id, snapshot._1);
-        final S s0 = (S) eventHandler.reduce(snapshot._2, ctx1, headEvents);
-        List tailEvents = cmdHandler.reduce(s0, ctx1, cmd);
-        int events = headEvents.length() + tailEvents.length();
-        S sN = (S) eventHandler.reduce(s0, ctx1, tailEvents);
+        final S s0 = eventHandler.reduce(snapshot._2, snapshot._2, ctx1, headEvents);
+        Tuple2<List, S> tailEvents = cmdHandler.reduce(s0, ctx1, cmd, eventHandler);
+        int events = headEvents.length() + tailEvents._1.length();
+        S sN = tailEvents._2;
         if (unsnapshottedEvents != null && unsnapshottedEvents < events) {
-            eventStore.record(id, tailEvents, Tuple.of(snapshot._1 + events, sN));
+            eventStore.record(id, tailEvents._1, Tuple.of(snapshot._1 + events, sN));
         } else {
-            eventStore.record(id, tailEvents);
+            eventStore.record(id, tailEvents._1);
         }
 
         return sN;

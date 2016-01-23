@@ -41,13 +41,13 @@ public class Dispatch {
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(
-            CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn
+            CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn
     ) {
         return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.of(cmdFn, eventFn));
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(
-            CommandFunction<?, S, Ctx> cmdFn, EventFunction<?, S, Ctx> eventFn, Integer snapshotEach
+            CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn, Integer snapshotEach
     ) {
         return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.of(cmdFn, eventFn, snapshotEach));
     }

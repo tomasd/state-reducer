@@ -16,6 +16,6 @@ public interface EventStore {
 
     void record(Object id, List events, Tuple2<Integer, Object> snapshot);
 
-    Tuple2<Integer, Object> lastSnapshot(Object id);
+    <S> Tuple2<Integer, S> lastSnapshot(Object id);
 
 }
