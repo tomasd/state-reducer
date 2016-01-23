@@ -80,7 +80,11 @@ public class StateReducerTest {
 
 
     public static List changeFirstNameEvent(ChangeFirstName cmd, Person personN) {
-        return List.of(new FirstNameChanged(cmd.firstName));
+        List events = List.empty();
+        if (personN == null) {
+            events = events.append(new PersonCreated(cmd.firstName, null));
+        }
+        return events.append(new FirstNameChanged(cmd.firstName));
     }
 
 
@@ -124,6 +128,26 @@ public class StateReducerTest {
         assertEquals(newPerson.lastName, "Doe");
         assertEquals(List.of(new PersonCreated("Jane", "Doe"), new FirstNameChanged("John")), eventStore.events(1));
         assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", "Doe")));
+    }
+
+    @Test
+    public void testCmd2() throws Exception {
+        EventStore eventStore = InMemoryStore.empty();
+
+        EsStateReducer<Person, State> sr = EsStateReducer.of(
+                Dispatch.<Person, State>cmd()
+                        .on(CreatePerson.class, CommandFunction.pc(StateReducerTest::createPerson))
+                        .on(ChangeFirstName.class, CommandFunction.pc(StateReducerTest::changeFirstNameEvent)),
+                Dispatch.<Person, State>event()
+                        .on(PersonCreated.class, EventFunction.p(StateReducerTest::personCreated))
+                        .on(FirstNameChanged.class, EventFunction.p(StateReducerTest::firstNameChanged)),
+                1);
+
+        Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));
+        assertEquals(newPerson.firstName, "John");
+        assertEquals(newPerson.lastName, null);
+        assertEquals(List.of(new PersonCreated("John", null), new FirstNameChanged("John")), eventStore.events(1));
+        assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", null)));
     }
 
 
