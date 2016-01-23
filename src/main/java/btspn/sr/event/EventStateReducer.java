@@ -1,11 +1,14 @@
-package btspn.sr;
+package btspn.sr.event;
+
+import btspn.sr.EventFunction;
+import btspn.sr.StateReducer;
 
 import java.util.function.Supplier;
 
-class EventStateReducer<S, Ctx> implements StateReducer<S, Ctx>{
+public class EventStateReducer<S, Ctx> implements StateReducer<S, Ctx> {
     private final EventFunction handler;
 
-    EventStateReducer(EventFunction<?, S, Ctx> handler) {
+    public EventStateReducer(EventFunction<?, S, Ctx> handler) {
         this.handler = handler;
     }
 

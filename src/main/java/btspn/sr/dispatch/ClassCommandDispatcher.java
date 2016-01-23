@@ -1,0 +1,42 @@
+package btspn.sr.dispatch;
+
+import btspn.sr.CommandFunction;
+import javaslang.collection.HashMap;
+import javaslang.collection.List;
+import javaslang.collection.Map;
+
+public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<Object, S, Ctx> {
+    private final Map<Class, CommandFunction> map;
+    private final CommandFunction defaultHandler;
+
+    private ClassCommandDispatcher(Map<Class, CommandFunction> map, CommandFunction defaultHandler) {
+        this.map = map;
+        this.defaultHandler = defaultHandler;
+    }
+
+    public ClassCommandDispatcher() {
+        this(HashMap.empty(), null);
+    }
+
+    public ClassCommandDispatcher(CommandFunction<Object, S, Ctx> defaultHandler) {
+        this(HashMap.empty(), defaultHandler);
+    }
+
+
+    @Override
+    public List apply(Object cmd, S s0, S sN, Ctx ctx) {
+        CommandFunction<Object, S, Ctx> handler = map.get(cmd.getClass()).orElse(defaultHandler);
+        if (handler == null) {
+            throw new IllegalArgumentException("Handler not defined for " + cmd.getClass());
+        }
+        return handler.apply(cmd, s0, sN, ctx);
+    }
+
+    public <C> ClassCommandDispatcher<S, Ctx> on(Class<C> clazz, CommandFunction<C, S, Ctx> fn) {
+        return new ClassCommandDispatcher<>(map.put(clazz, fn), defaultHandler);
+    }
+
+    public <C> ClassCommandDispatcher<S, Ctx> orElse(CommandFunction<Object, S, Ctx> fn) {
+        return new ClassCommandDispatcher<>(map, fn);
+    }
+}

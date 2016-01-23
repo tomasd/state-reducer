@@ -1,17 +1,20 @@
-package btspn.sr;
+package btspn.sr.cmd;
 
+import btspn.sr.CommandFunction;
+import btspn.sr.EsStateReducer;
+import btspn.sr.EventFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List;
 
 import java.util.function.Supplier;
 
-class CommandStateReducer<S, Ctx> implements EsStateReducer<S, Ctx>{
+public class CommandStateReducer<S, Ctx> implements EsStateReducer<S, Ctx> {
     private final CommandFunction cmdHandler;
     private final EventFunction eventHandler;
     private final Integer unsnapshottedEvents;
 
-    CommandStateReducer(CommandFunction cmdHandler, EventFunction eventHandler, Integer unsnapshottedEvents) {
+    public CommandStateReducer(CommandFunction cmdHandler, EventFunction eventHandler, Integer unsnapshottedEvents) {
         this.cmdHandler = cmdHandler;
         this.eventHandler = eventHandler;
         this.unsnapshottedEvents = unsnapshottedEvents;

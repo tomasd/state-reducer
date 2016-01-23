@@ -1,5 +1,10 @@
 package btspn.sr;
 
+import btspn.sr.cmd.EventStore;
+import btspn.sr.cmd.InMemoryStore;
+import btspn.sr.dispatch.ClassEsStateReducingDispatcher;
+import btspn.sr.dispatch.ClassStateReducingDispatcher;
+import btspn.sr.event.Holder;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import org.testng.annotations.Test;
@@ -93,7 +98,7 @@ public class StateReducerTest {
 
 
         Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
-        Dispatch.ClassStateReducingDispatcher<Person, State> sr = Dispatch.state(
+        StateReducer<Person, State> sr = StateReducer.of(
                 Dispatch.<Person, State>event()
                         .on(ChangeFirstName.class,
                                 ep(StateReducerTest::changeFirstName)));
@@ -108,17 +113,14 @@ public class StateReducerTest {
     public void testCmd() throws Exception {
         EventStore eventStore = InMemoryStore.empty();
 
-        Dispatch.ClassEsStateReducingDispatcher<Person, State> sr = Dispatch
-                .esState(
-                        Dispatch.<Person, State>cmd()
-                                .on(CreatePerson.class, cp(StateReducerTest::createPerson))
-                                .on(ChangeFirstName.class, cp(StateReducerTest::changeFirstNameEvent))
-
-                        ,
-                        Dispatch.<Person, State>event()
-                                .on(PersonCreated.class, ep(StateReducerTest::personCreated))
-                                .on(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
-                        1);
+        EsStateReducer<Person, State> sr = EsStateReducer.of(
+                Dispatch.<Person, State>cmd()
+                        .on(CreatePerson.class, cp(StateReducerTest::createPerson))
+                        .on(ChangeFirstName.class, cp(StateReducerTest::changeFirstNameEvent)),
+                Dispatch.<Person, State>event()
+                        .on(PersonCreated.class, ep(StateReducerTest::personCreated))
+                        .on(FirstNameChanged.class, ep(StateReducerTest::firstNameChanged)),
+                1);
 
         sr.apply(eventStore, State::new, 1, new CreatePerson("Jane", "Doe"));
         Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));

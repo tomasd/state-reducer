@@ -1,8 +1,10 @@
-package btspn.sr;
+package btspn.sr.event;
+
+import btspn.sr.event.Holder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-class AtomicHolder<T> implements Holder<T>{
+class AtomicHolder<T> implements Holder<T> {
     private final AtomicReference<T> ref;
 
     AtomicHolder(T value) {

@@ -1,4 +1,4 @@
-package btspn.sr;
+package btspn.sr.cmd;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
