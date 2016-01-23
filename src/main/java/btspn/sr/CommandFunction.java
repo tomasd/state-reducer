@@ -4,7 +4,7 @@ import javaslang.*;
 import javaslang.collection.List;
 
 /**
- * Command function processes command on current state and returns list of events.
+ * Command function processes command on current state and returns list of events .
  *
  * @param <C>   command
  * @param <S>   state
