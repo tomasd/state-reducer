@@ -33,23 +33,23 @@ public class Dispatch {
     }
 
     public static <S, Ctx> ClassStateReducingDispatcher<S, Ctx> state(EventFunction<?, S, Ctx> eventFn) {
-        return new ClassStateReducingDispatcher<>(HashMap.empty(), StateReducer.of(eventFn));
+        return new ClassStateReducingDispatcher<>(StateReducer.of(eventFn));
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState() {
-        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), null);
+        return new ClassEsStateReducingDispatcher<>();
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(
             CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn
     ) {
-        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.of(cmdFn, eventFn));
+        return new ClassEsStateReducingDispatcher<>(EsStateReducer.of(cmdFn, eventFn));
     }
 
     public static <S, Ctx> ClassEsStateReducingDispatcher<S, Ctx> esState(
             CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn, Integer snapshotEach
     ) {
-        return new ClassEsStateReducingDispatcher<>(HashMap.empty(), EsStateReducer.of(cmdFn, eventFn, snapshotEach));
+        return new ClassEsStateReducingDispatcher<>(EsStateReducer.of(cmdFn, eventFn, snapshotEach));
     }
 
 }
