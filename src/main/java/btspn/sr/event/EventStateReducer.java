@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 public class EventStateReducer<S, Ctx> implements StateReducer<S, Ctx> {
     private final EventFunction handler;
 
-    public EventStateReducer(EventFunction<?, S, Ctx> handler) {
+    public EventStateReducer(EventFunction<S, Ctx> handler) {
         this.handler = handler;
     }
 

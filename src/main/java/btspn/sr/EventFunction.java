@@ -10,23 +10,21 @@ import java.util.Arrays;
 /**
  * Event function applies event on current state and returns new state.
  *
- * @param <E>   event
  * @param <S>   state
  * @param <Ctx> context
  */
-public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
+public interface EventFunction<S, Ctx> extends Function4<Object, S, S, Ctx, S> {
     /**
      * Invariant wrapper.
      * <p>
      * Invariant is useful for validation and recomputation.
      *
      * @param fn    function
-     * @param <E>   event
      * @param <S>   state
      * @param <Ctx> context
      * @return event function
      */
-    static <E, S, Ctx> EventFunction<E, S, Ctx> i(Function1<S, S> fn) {
+    static <S, Ctx> EventFunction<S, Ctx> i(Function1<S, S> fn) {
         return (c, s, s2, ctx) -> fn.apply(s2);
     }
 
@@ -36,12 +34,11 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
      * Invariant is useful for validation and recomputation.
      *
      * @param fn    function
-     * @param <E>   event
      * @param <S>   state
      * @param <Ctx> context
      * @return event function
      */
-    static <E, S, Ctx> EventFunction<E, S, Ctx> i(Function2<S, Ctx, S> fn) {
+    static <S, Ctx> EventFunction<S, Ctx> i(Function2<S, Ctx, S> fn) {
         return (c, s, s2, ctx) -> fn.apply(s2, ctx);
     }
 
@@ -56,8 +53,8 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
      * @param <Ctx> context
      * @return event function
      */
-    static <E, S, Ctx> EventFunction<E, S, Ctx> p(Function2<E, S, S> fn) {
-        return (c, s, s2, ctx) -> fn.apply(c, s2);
+    static <E, S, Ctx> EventFunction<S, Ctx> p(Function2<E, S, S> fn) {
+        return (c, s, s2, ctx) -> fn.apply((E) c, s2);
     }
 
     /**
@@ -71,8 +68,24 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
      * @param <Ctx> context
      * @return event function
      */
-    static <E, S, Ctx> EventFunction<E, S, Ctx> p(Function3<E, S, Ctx, S> fn) {
-        return (c, s, s2, ctx) -> fn.apply(c, s2, ctx);
+    static <E, S, Ctx> EventFunction<S, Ctx> p(Function2<E, S, S> fn, Class<Ctx> ctxClass) {
+        return (c, s, s2, ctx) -> fn.apply((E) c, s2);
+    }
+
+
+    /**
+     * Process wrapper.
+     * <p>
+     * Process is useful for command validation and process.
+     *
+     * @param fn    function
+     * @param <E>   event
+     * @param <S>   state
+     * @param <Ctx> context
+     * @return event function
+     */
+    static <E, S, Ctx> EventFunction<S, Ctx> p(Function3<E, S, Ctx, S> fn) {
+        return (c, s, s2, ctx) -> fn.apply((E) c, s2, ctx);
     }
 
     /**
@@ -81,16 +94,15 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
      * Wires multiple event functions into one.
      *
      * @param fns   function
-     * @param <E>   event
      * @param <S>   state
      * @param <Ctx> context
      * @return event function
      */
     @SafeVarargs
-    static <E, S, Ctx> EventFunction<E, S, Ctx> t(EventFunction<E, S, Ctx>... fns) {
+    static <S, Ctx> EventFunction<S, Ctx> t(EventFunction<S, Ctx>... fns) {
         return (c, s, s2, ctx) -> {
 
-            for (EventFunction<E, S, Ctx> fn : fns) {
+            for (EventFunction<S, Ctx> fn : fns) {
                 s2 = fn.apply(c, s, s2, ctx);
             }
             return s2;
@@ -101,12 +113,11 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
     /**
      * Empty event function.
      *
-     * @param <E>   event
      * @param <S>   state
      * @param <Ctx> context
      * @return event function
      */
-    static <E, S, Ctx> EventFunction<E, S, Ctx> nil() {
+    static <S, Ctx> EventFunction<S, Ctx> nil() {
         return (c, s, s2, ctx) -> s2;
     }
 
@@ -120,7 +131,7 @@ public interface EventFunction<E, S, Ctx> extends Function4<E, S, S, Ctx, S> {
 
     default S reduce(S s0, S sN, Ctx ctx, Iterable events) {
         for (Object event : events) {
-            sN = apply((E) event, s0, sN, ctx);
+            sN = apply(event, s0, sN, ctx);
         }
         return sN;
     }

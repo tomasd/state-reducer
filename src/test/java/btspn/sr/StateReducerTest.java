@@ -5,6 +5,7 @@ import btspn.sr.cmd.InMemoryStore;
 import btspn.sr.event.Holder;
 import javaslang.Tuple;
 import javaslang.collection.List;
+import javaslang.control.Match;
 import org.testng.annotations.Test;
 
 import java.util.Objects;
@@ -100,13 +101,18 @@ public class StateReducerTest {
 
     @Test
     public void testEvent() throws Exception {
-
-
-        Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
-        StateReducer<Person, State> sr = StateReducer.of(
+        testEvent(StateReducer.of(
                 Dispatch.<Person, State>event()
                         .on(ChangeFirstName.class,
-                                p(StateReducerTest::changeFirstName)));
+                                p(StateReducerTest::changeFirstName))));
+        testEvent(StateReducer.of(
+                Dispatch.event(Match
+                        .whenType(ChangeFirstName.class)
+                        .then(p(StateReducerTest::changeFirstName)))));
+    }
+
+    private void testEvent(StateReducer<Person, State> sr) {
+        Holder<Person> holder = Holder.hold(new Person("Jane", "Doe"));
 
         Person newPerson = sr.apply(holder, State::new, new ChangeFirstName("John"));
         assertEquals(newPerson.firstName, "John");
@@ -116,16 +122,33 @@ public class StateReducerTest {
 
     @Test
     public void testCmd() throws Exception {
-        EventStore eventStore = InMemoryStore.empty();
-
-        EsStateReducer<Person, State> sr = EsStateReducer.of(
+        testCmd(EsStateReducer.of(
                 Dispatch.<Person, State>cmd()
                         .on(CreatePerson.class, pc(StateReducerTest::createPerson))
                         .on(ChangeFirstName.class, pc(StateReducerTest::changeFirstNameEvent)),
                 Dispatch.<Person, State>event()
                         .on(PersonCreated.class, p(StateReducerTest::personCreated))
                         .on(FirstNameChanged.class, p(StateReducerTest::firstNameChanged)),
-                1);
+                1));
+        testCmd(EsStateReducer.of(
+                Dispatch.cmd(Match
+                        .whenType(CreatePerson.class)
+                        .then(pc(StateReducerTest::createPerson, State.class))
+
+                        .whenType(ChangeFirstName.class)
+                        .then(pc(StateReducerTest::changeFirstNameEvent))),
+                Dispatch.event(Match
+                        .whenType(PersonCreated.class)
+                        .then(p(StateReducerTest::personCreated, State.class))
+
+                        .whenType(FirstNameChanged.class)
+                        .then(p(StateReducerTest::firstNameChanged))),
+                1));
+    }
+
+    private void testCmd(EsStateReducer<Person, State> sr) {
+        EventStore eventStore = InMemoryStore.empty();
+
 
         sr.apply(eventStore, State::new, 1, new CreatePerson("Jane", "Doe"));
         Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));

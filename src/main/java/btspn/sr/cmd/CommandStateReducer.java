@@ -10,11 +10,11 @@ import javaslang.collection.List;
 import java.util.function.Supplier;
 
 public class CommandStateReducer<S, Ctx> implements EsStateReducer<S, Ctx> {
-    private final CommandFunction<Object, S, Ctx> cmdHandler;
-    private final EventFunction<Object, S, Ctx> eventHandler;
+    private final CommandFunction<S, Ctx> cmdHandler;
+    private final EventFunction<S, Ctx> eventHandler;
     private final Integer unsnapshottedEvents;
 
-    public CommandStateReducer(CommandFunction<Object, S, Ctx> cmdHandler, EventFunction<Object, S, Ctx> eventHandler, Integer unsnapshottedEvents) {
+    public CommandStateReducer(CommandFunction<S, Ctx> cmdHandler, EventFunction<S, Ctx> eventHandler, Integer unsnapshottedEvents) {
         this.cmdHandler = cmdHandler;
         this.eventHandler = eventHandler;
         this.unsnapshottedEvents = unsnapshottedEvents;

@@ -13,11 +13,11 @@ import java.util.function.Supplier;
  * @param <Ctx>
  */
 public interface EsStateReducer<S, Ctx> extends Function4<EventStore, Supplier<Ctx>, Object, Object, S> {
-    static <S, Ctx> EsStateReducer<S, Ctx> of(CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn) {
+    static <S, Ctx> EsStateReducer<S, Ctx> of(CommandFunction<S, Ctx> cmdFn, EventFunction<S, Ctx> eventFn) {
         return of(cmdFn, eventFn, null);
     }
 
-    static <S, Ctx> EsStateReducer<S, Ctx> of(CommandFunction<Object, S, Ctx> cmdFn, EventFunction<Object, S, Ctx> eventFn, Integer snapshotEach) {
+    static <S, Ctx> EsStateReducer<S, Ctx> of(CommandFunction<S, Ctx> cmdFn, EventFunction<S, Ctx> eventFn, Integer snapshotEach) {
         return new CommandStateReducer<>(cmdFn, eventFn, snapshotEach);
     }
 }
