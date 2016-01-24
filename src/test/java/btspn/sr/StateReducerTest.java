@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static btspn.sr.CommandFunction.pc;
 import static btspn.sr.EventFunction.p;
@@ -180,6 +181,16 @@ public class StateReducerTest {
         assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", null)));
     }
 
+    @Test
+    public void testSideEffectEvent() throws Exception {
+        new StateReducer<Person, State>() {
+
+            @Override
+            public Person apply(Holder<Person> personHolder, Supplier<State> stateSupplier, Object o) {
+                return null;
+            }
+        };
+    }
 
     private static Person firstNameChanged(FirstNameChanged event, Person personN) {
         return new Person(event.firstName, personN.lastName);
