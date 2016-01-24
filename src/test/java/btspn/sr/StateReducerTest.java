@@ -158,27 +158,6 @@ public class StateReducerTest {
         assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", "Doe")));
     }
 
-    @Test
-    public void testCmdPredicate() throws Exception {
-        EventStore eventStore = InMemoryStore.empty();
-
-        EsStateReducer<Person, State> sr = EsStateReducer.of(
-                Dispatch.<Person, State>cmd()
-                        .on(assignableFrom(CreatePerson.class), pc(StateReducerTest::createPerson))
-                        .on(assignableFrom(ChangeFirstName.class), pc(StateReducerTest::changeFirstNameEvent)),
-                Dispatch.<Person, State>event()
-                        .on(assignableFrom(PersonCreated.class), p(StateReducerTest::personCreated))
-                        .on(assignableFrom(FirstNameChanged.class), p(StateReducerTest::firstNameChanged)),
-                1);
-
-        sr.apply(eventStore, State::new, 1, new CreatePerson("Jane", "Doe"));
-        Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));
-        assertEquals(newPerson.firstName, "John");
-        assertEquals(newPerson.lastName, "Doe");
-        assertEquals(List.of(new PersonCreated("Jane", "Doe"), new FirstNameChanged("John")), eventStore.events(1));
-        assertEquals(eventStore.lastSnapshot(1), Tuple.of(2, new Person("John", "Doe")));
-    }
-
     private static <C> Predicate<C> assignableFrom(Class clazz) {
         return o -> clazz.isAssignableFrom(o.getClass());
     }
