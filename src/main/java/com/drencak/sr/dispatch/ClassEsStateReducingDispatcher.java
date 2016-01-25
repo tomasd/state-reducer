@@ -23,7 +23,7 @@ public class ClassEsStateReducingDispatcher<S, Ctx> implements EsStateReducer<S,
 
     @Override
     public S apply(EventStore eventStore, Supplier<Ctx> ctx, Object id, Object command) {
-        EsStateReducer<S, Ctx> handler = this.map.get(command.getClass()).orElse(defaultHandler);
+        EsStateReducer<S, Ctx> handler = this.map.get(command.getClass()).getOrElse(defaultHandler);
         if (handler == null) {
             throw new IllegalArgumentException("Handler not defined for " + command.getClass());
         }

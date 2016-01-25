@@ -26,7 +26,7 @@ public class ClassStateReducingDispatcher<S, Ctx> implements StateReducer<S, Ctx
 
     @Override
     public S apply(Holder<S> holder, Supplier<Ctx> ctx, Object command) {
-        StateReducer<S, Ctx> handler = this.map.get(command.getClass()).orElse(defaultHandler);
+        StateReducer<S, Ctx> handler = this.map.get(command.getClass()).getOrElse(defaultHandler);
         if (handler == null) {
             throw new IllegalArgumentException("Handler not defined for " + command.getClass());
         }

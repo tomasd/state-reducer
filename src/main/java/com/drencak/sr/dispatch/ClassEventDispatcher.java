@@ -19,7 +19,7 @@ public class ClassEventDispatcher<S, Ctx> implements EventFunction<S, Ctx> {
 
     @Override
     public S apply(Object event, S s0, S sN, Ctx ctx) {
-        EventFunction<S, Ctx> handler = this.map.get(event.getClass()).orElse(defaultHandler);
+        EventFunction<S, Ctx> handler = this.map.get(event.getClass()).getOrElse(defaultHandler);
         if (handler == null) {
             throw new IllegalArgumentException("Handler not defined for " + event.getClass());
         }

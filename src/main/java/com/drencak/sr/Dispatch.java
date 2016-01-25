@@ -11,7 +11,7 @@ public class Dispatch {
         return new ClassEventDispatcher<>();
     }
 
-    public static <S, Ctx> EventFunction<S, Ctx> event(Match<EventFunction<S, Ctx>> match) {
+    public static <S, Ctx> EventFunction<S, Ctx> event(Match.MatchFunction<EventFunction<S, Ctx>> match) {
         return (o, s, s2, ctx) -> match.apply(o).apply(o, s, s2, ctx);
     }
 
@@ -19,7 +19,7 @@ public class Dispatch {
         return new ClassCommandDispatcher<>();
     }
 
-    public static <S, Ctx> CommandFunction<S, Ctx> cmd(Match<CommandFunction<S, Ctx>> match) {
+    public static <S, Ctx> CommandFunction<S, Ctx> cmd(Match.MatchFunction<CommandFunction<S, Ctx>> match) {
         return (o, s, s2, ctx, player) -> match.apply(o).apply(o, s, s2, ctx, player);
     }
 
@@ -27,7 +27,7 @@ public class Dispatch {
         return new ClassStateReducingDispatcher<>();
     }
 
-    public static <S, Ctx> StateReducer<S, Ctx> state(Match<StateReducer<S, Ctx>> match) {
+    public static <S, Ctx> StateReducer<S, Ctx> state(Match.MatchFunction<StateReducer<S, Ctx>> match) {
         return (sHolder, ctxSupplier, o) -> match.apply(o).apply(sHolder, ctxSupplier, o);
     }
 
@@ -35,7 +35,7 @@ public class Dispatch {
         return new ClassEsStateReducingDispatcher<>();
     }
 
-    public static <S, Ctx> EsStateReducer<S, Ctx> esState(Match<EsStateReducer<S, Ctx>> match) {
+    public static <S, Ctx> EsStateReducer<S, Ctx> esState(Match.MatchFunction<EsStateReducer<S, Ctx>> match) {
         return (eventStore, ctxSupplier, id, cmd) -> match.apply(cmd).apply(eventStore, ctxSupplier, id, cmd);
     }
 }

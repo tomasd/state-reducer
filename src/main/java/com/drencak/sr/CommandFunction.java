@@ -131,6 +131,22 @@ public interface CommandFunction<S, Ctx> extends Function5<Object, S, S, Ctx, Ev
     }
 
     /**
+     * Conditional threading command function.
+     * <p>
+     * If predicate returns true, then run all fns.
+     *
+     * @param predicate predicate
+     * @param fns       functions
+     * @param <S>       state
+     * @param <C>       command
+     * @param <X>       context
+     * @return
+     */
+    static <S, C, X> CommandFunction<S, X> when(Function5<C, S, S, X, EventFunction<S, X>, Boolean> predicate, CommandFunction<S, X>... fns) {
+        return (o, s, s2, x, sxEventFunction) -> predicate.apply((C) o, s, s2, x, sxEventFunction) ? tc(fns).apply((C) o, s, s2, x, sxEventFunction) : Tuple.of(List.empty(), s2);
+    }
+
+    /**
      * Start of the computations s0 == sN.
      *
      * @param state   state

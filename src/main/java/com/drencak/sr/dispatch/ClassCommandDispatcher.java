@@ -22,7 +22,7 @@ public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<S, Ctx> {
 
     @Override
     public Tuple2<List, S> apply(Object cmd, S s0, S sN, Ctx ctx, EventFunction<S, Ctx> player) {
-        CommandFunction<S, Ctx> handler = this.map.get(cmd.getClass()).orElse(defaultHandler);
+        CommandFunction<S, Ctx> handler = this.map.get(cmd.getClass()).getOrElse(defaultHandler);
         if (handler == null) {
             throw new IllegalArgumentException("Handler not defined for " + cmd.getClass());
         }

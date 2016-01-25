@@ -121,6 +121,23 @@ public interface EventFunction<S, Ctx> extends Function4<Object, S, S, Ctx, S> {
         return (c, s, s2, ctx) -> s2;
     }
 
+    /**
+     * Conditional threading.
+     *
+     * If predicate returns true, then process all fns.
+     *
+     * @param predicate predicate
+     * @param fns fns
+     * @param <S> Sta
+     * @param <C> command
+     * @param <Ctx> context
+     * @return event function
+     */
+    @SafeVarargs
+    static <S, C, Ctx> EventFunction<S, Ctx> when(Function4<C, S, S, Ctx, Boolean> predicate, EventFunction<S, Ctx>... fns) {
+        return (c, s, s2, config) -> predicate.apply((C) c, s, s2, config) ? t(fns).apply(c, s, s2, config) : s2;
+    }
+
     default S reduce(S s0, Ctx ctx, Object... events) {
         return reduce(s0, s0, ctx, events);
     }
