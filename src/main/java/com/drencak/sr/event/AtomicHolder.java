@@ -1,6 +1,4 @@
-package btspn.sr.event;
-
-import btspn.sr.event.Holder;
+package com.drencak.sr.event;
 
 import java.util.concurrent.atomic.AtomicReference;
 

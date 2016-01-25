@@ -1,13 +1,10 @@
-package btspn.sr.dispatch;
+package com.drencak.sr.dispatch;
 
-import btspn.sr.EsStateReducer;
-import btspn.sr.cmd.EventStore;
-import javaslang.Tuple2;
+import com.drencak.sr.EsStateReducer;
+import com.drencak.sr.cmd.EventStore;
 import javaslang.collection.HashMap;
 import javaslang.collection.Map;
-import javaslang.control.Option;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ClassEsStateReducingDispatcher<S, Ctx> implements EsStateReducer<S, Ctx> {

@@ -1,7 +1,7 @@
-package btspn.sr;
+package com.drencak.sr;
 
-import btspn.sr.cmd.CommandStateReducer;
-import btspn.sr.cmd.EventStore;
+import com.drencak.sr.cmd.CommandStateReducer;
+import com.drencak.sr.cmd.EventStore;
 import javaslang.Function4;
 
 import java.util.function.Supplier;

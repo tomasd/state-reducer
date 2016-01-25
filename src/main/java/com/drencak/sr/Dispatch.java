@@ -1,9 +1,9 @@
-package btspn.sr;
+package com.drencak.sr;
 
-import btspn.sr.dispatch.ClassCommandDispatcher;
-import btspn.sr.dispatch.ClassEsStateReducingDispatcher;
-import btspn.sr.dispatch.ClassEventDispatcher;
-import btspn.sr.dispatch.ClassStateReducingDispatcher;
+import com.drencak.sr.dispatch.ClassCommandDispatcher;
+import com.drencak.sr.dispatch.ClassEsStateReducingDispatcher;
+import com.drencak.sr.dispatch.ClassEventDispatcher;
+import com.drencak.sr.dispatch.ClassStateReducingDispatcher;
 import javaslang.control.Match;
 
 public class Dispatch {

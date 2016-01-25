@@ -1,8 +1,8 @@
-package btspn.sr;
+package com.drencak.sr;
 
-import btspn.sr.cmd.EventStore;
-import btspn.sr.cmd.InMemoryStore;
-import btspn.sr.event.Holder;
+import com.drencak.sr.cmd.EventStore;
+import com.drencak.sr.cmd.InMemoryStore;
+import com.drencak.sr.event.Holder;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import javaslang.control.Match;
@@ -12,8 +12,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static btspn.sr.CommandFunction.pc;
-import static btspn.sr.EventFunction.p;
+import static com.drencak.sr.CommandFunction.pc;
+import static com.drencak.sr.EventFunction.p;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
@@ -104,11 +104,11 @@ public class StateReducerTest {
         testEvent(StateReducer.of(
                 Dispatch.<Person, State>event()
                         .on(ChangeFirstName.class,
-                                p(StateReducerTest::changeFirstName))));
+                                EventFunction.p(StateReducerTest::changeFirstName))));
         testEvent(StateReducer.of(
                 Dispatch.event(Match
                         .whenType(ChangeFirstName.class)
-                        .then(p(StateReducerTest::changeFirstName)))));
+                        .then(EventFunction.p(StateReducerTest::changeFirstName)))));
     }
 
     private void testEvent(StateReducer<Person, State> sr) {
@@ -124,25 +124,25 @@ public class StateReducerTest {
     public void testCmd() throws Exception {
         testCmd(EsStateReducer.of(
                 Dispatch.<Person, State>cmd()
-                        .on(CreatePerson.class, pc(StateReducerTest::createPerson))
-                        .on(ChangeFirstName.class, pc(StateReducerTest::changeFirstNameEvent)),
+                        .on(CreatePerson.class, CommandFunction.pc(StateReducerTest::createPerson))
+                        .on(ChangeFirstName.class, CommandFunction.pc(StateReducerTest::changeFirstNameEvent)),
                 Dispatch.<Person, State>event()
-                        .on(PersonCreated.class, p(StateReducerTest::personCreated))
-                        .on(FirstNameChanged.class, p(StateReducerTest::firstNameChanged)),
+                        .on(PersonCreated.class, EventFunction.p(StateReducerTest::personCreated))
+                        .on(FirstNameChanged.class, EventFunction.p(StateReducerTest::firstNameChanged)),
                 1));
         testCmd(EsStateReducer.of(
                 Dispatch.cmd(Match
                         .whenType(CreatePerson.class)
-                        .then(pc(StateReducerTest::createPerson, State.class))
+                        .then(CommandFunction.pc(StateReducerTest::createPerson, State.class))
 
                         .whenType(ChangeFirstName.class)
-                        .then(pc(StateReducerTest::changeFirstNameEvent))),
+                        .then(CommandFunction.pc(StateReducerTest::changeFirstNameEvent))),
                 Dispatch.event(Match
                         .whenType(PersonCreated.class)
-                        .then(p(StateReducerTest::personCreated, State.class))
+                        .then(EventFunction.p(StateReducerTest::personCreated, State.class))
 
                         .whenType(FirstNameChanged.class)
-                        .then(p(StateReducerTest::firstNameChanged))),
+                        .then(EventFunction.p(StateReducerTest::firstNameChanged))),
                 1));
     }
 
@@ -169,11 +169,11 @@ public class StateReducerTest {
 
         EsStateReducer<Person, State> sr = EsStateReducer.of(
                 Dispatch.<Person, State>cmd()
-                        .on(CreatePerson.class, pc(StateReducerTest::createPerson))
-                        .on(ChangeFirstName.class, pc(StateReducerTest::changeFirstNameEvent)),
+                        .on(CreatePerson.class, CommandFunction.pc(StateReducerTest::createPerson))
+                        .on(ChangeFirstName.class, CommandFunction.pc(StateReducerTest::changeFirstNameEvent)),
                 Dispatch.<Person, State>event()
-                        .on(PersonCreated.class, p(StateReducerTest::personCreated))
-                        .on(FirstNameChanged.class, p(StateReducerTest::firstNameChanged)),
+                        .on(PersonCreated.class, EventFunction.p(StateReducerTest::personCreated))
+                        .on(FirstNameChanged.class, EventFunction.p(StateReducerTest::firstNameChanged)),
                 1);
 
         Person newPerson = sr.apply(eventStore, State::new, 1, new ChangeFirstName("John"));

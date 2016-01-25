@@ -1,7 +1,7 @@
-package btspn.sr.event;
+package com.drencak.sr.event;
 
-import btspn.sr.EventFunction;
-import btspn.sr.StateReducer;
+import com.drencak.sr.EventFunction;
+import com.drencak.sr.StateReducer;
 
 import java.util.function.Supplier;
 

@@ -1,4 +1,4 @@
-package btspn.sr;
+package com.drencak.sr;
 
 import javaslang.Function1;
 import javaslang.Function2;

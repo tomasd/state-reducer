@@ -1,11 +1,10 @@
-package btspn.sr.dispatch;
+package com.drencak.sr.dispatch;
 
-import btspn.sr.event.Holder;
-import btspn.sr.StateReducer;
+import com.drencak.sr.event.Holder;
+import com.drencak.sr.StateReducer;
 import javaslang.collection.HashMap;
 import javaslang.collection.Map;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ClassStateReducingDispatcher<S, Ctx> implements StateReducer<S, Ctx> {

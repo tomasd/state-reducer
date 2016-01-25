@@ -1,4 +1,4 @@
-package btspn.sr;
+package com.drencak.sr;
 
 import javaslang.*;
 import javaslang.collection.List;

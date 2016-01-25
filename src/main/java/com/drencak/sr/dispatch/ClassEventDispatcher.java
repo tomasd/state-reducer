@@ -1,12 +1,8 @@
-package btspn.sr.dispatch;
+package com.drencak.sr.dispatch;
 
-import btspn.sr.EventFunction;
-import javaslang.Tuple2;
+import com.drencak.sr.EventFunction;
 import javaslang.collection.HashMap;
 import javaslang.collection.Map;
-import javaslang.control.Option;
-
-import java.util.function.Predicate;
 
 public class ClassEventDispatcher<S, Ctx> implements EventFunction<S, Ctx> {
     private final Map<Class, EventFunction> map;

@@ -1,8 +1,8 @@
-package btspn.sr.cmd;
+package com.drencak.sr.cmd;
 
-import btspn.sr.CommandFunction;
-import btspn.sr.EsStateReducer;
-import btspn.sr.EventFunction;
+import com.drencak.sr.CommandFunction;
+import com.drencak.sr.EsStateReducer;
+import com.drencak.sr.EventFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List;

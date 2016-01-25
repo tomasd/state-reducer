@@ -1,14 +1,11 @@
-package btspn.sr.dispatch;
+package com.drencak.sr.dispatch;
 
-import btspn.sr.CommandFunction;
-import btspn.sr.EventFunction;
+import com.drencak.sr.CommandFunction;
+import com.drencak.sr.EventFunction;
 import javaslang.Tuple2;
 import javaslang.collection.HashMap;
 import javaslang.collection.List;
 import javaslang.collection.Map;
-import javaslang.control.Option;
-
-import java.util.function.Predicate;
 
 public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<S, Ctx> {
     private final Map<Class, CommandFunction> map;
