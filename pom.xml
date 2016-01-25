@@ -13,6 +13,7 @@
     <url>https://github.com/tomasd/state-reducer</url>
     <scm>
         <url>https://github.com/tomasd/state-reducer.git</url>
+        <connection>scm:git:https://github.com/tomasd/state-reducer.git</connection>
     </scm>
     <build>
         <plugins>
@@ -24,6 +25,11 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
             </plugin>
         </plugins>
     </build>
