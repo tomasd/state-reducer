@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Kind of event function with side effects separated into Holder.
  *
- * @param <S> state
+ * @param <S>   state
  * @param <Ctx> context
  */
 public interface StateReducer<S, Ctx> extends Function3<Holder<S>, Supplier<Ctx>, Object, S> {
