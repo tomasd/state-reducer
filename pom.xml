@@ -12,7 +12,8 @@
     <url>https://github.com/tomasd/state-reducer</url>
     <scm>
         <url>https://github.com/tomasd/state-reducer.git</url>
-        <connection>scm:git:https://github.com/tomasd/state-reducer.git</connection>
+        <connection>scm:git:git@github.com:tomasd/state-reducer.git</connection>
+
     </scm>
     <developers>
         <developer>
@@ -44,7 +45,7 @@
                 <version>2.5.3</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
+                    <useReleaseProfile>true</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                 </configuration>
