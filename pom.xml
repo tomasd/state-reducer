@@ -11,7 +11,7 @@
     <url>https://github.com/tomasd/state-reducer</url>
     <scm>
         <url>https://github.com/tomasd/state-reducer.git</url>
-        <connection>scm:git:https://github.com/tomasd/state-reducer.git</connection>
+        <connection>scm:git:git@github.com:tomasd/state-reducer.git</connection>
       <tag>HEAD</tag>
   </scm>
     <developers>
