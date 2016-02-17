@@ -10,7 +10,7 @@ Add dependency to your pom.xml:
 <dependency>
     <groupId>com.drencak.state-reducer</groupId>
     <artifactId>state-reducer</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 </dependency>
 ```
 
