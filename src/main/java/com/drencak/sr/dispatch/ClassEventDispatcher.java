@@ -33,4 +33,8 @@ public class ClassEventDispatcher<S, Ctx> implements EventFunction<S, Ctx> {
     public <E> ClassEventDispatcher<S, Ctx> orElse(EventFunction<S, Ctx> fn) {
         return new ClassEventDispatcher<>(map, fn);
     }
+
+    public EventFunction<S, Ctx> cast() {
+        return this;
+    }
 }

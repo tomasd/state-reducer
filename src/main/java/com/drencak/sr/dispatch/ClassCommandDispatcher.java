@@ -36,4 +36,8 @@ public class ClassCommandDispatcher<S, Ctx> implements CommandFunction<S, Ctx> {
     public <C> ClassCommandDispatcher<S, Ctx> orElse(CommandFunction<S, Ctx> fn) {
         return new ClassCommandDispatcher<>(map, fn);
     }
+
+    public CommandFunction<S,Ctx> cast() {
+        return this;
+    }
 }
