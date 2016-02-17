@@ -4,7 +4,7 @@
 
     <groupId>com.drencak.state-reducer</groupId>
     <artifactId>state-reducer</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 
     <name>State reducer</name>
     <description>Library for CQRS, command and event processing</description>
@@ -13,7 +13,7 @@
         <url>https://github.com/tomasd/state-reducer.git</url>
         <connection>scm:git:git@github.com:tomasd/state-reducer.git</connection>
 
-      <tag>state-reducer-0.3</tag>
+      <tag>HEAD</tag>
   </scm>
     <developers>
         <developer>
