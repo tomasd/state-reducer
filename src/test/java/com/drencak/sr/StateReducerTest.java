@@ -5,18 +5,17 @@ import com.drencak.sr.cmd.InMemoryStore;
 import com.drencak.sr.event.Holder;
 import javaslang.Tuple;
 import javaslang.collection.List;
-import javaslang.control.Match;
 import org.testng.annotations.Test;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static com.drencak.sr.CommandFunction.pc;
-import static com.drencak.sr.EventFunction.p;
+import static javaslang.API.Case;
+import static javaslang.API.Match;
+import static javaslang.Predicates.instanceOf;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
 
 public class StateReducerTest {
     public static class State {
@@ -106,9 +105,10 @@ public class StateReducerTest {
                         .on(ChangeFirstName.class,
                                 EventFunction.p(StateReducerTest::changeFirstName))));
         testEvent(StateReducer.of(
-                Dispatch.event(Match
-                        .whenType(ChangeFirstName.class)
-                        .then(EventFunction.p(StateReducerTest::changeFirstName)))));
+                Dispatch.event(cmd ->
+                        Match(cmd).of(
+                                Case(instanceOf(ChangeFirstName.class), EventFunction.p(StateReducerTest::changeFirstName))
+                        ))));
     }
 
     private void testEvent(StateReducer<Person, State> sr) {
@@ -131,18 +131,18 @@ public class StateReducerTest {
                         .on(FirstNameChanged.class, EventFunction.p(StateReducerTest::firstNameChanged)),
                 1));
         testCmd(EsStateReducer.of(
-                Dispatch.cmd(Match
-                        .whenType(CreatePerson.class)
-                        .then(CommandFunction.pc(StateReducerTest::createPerson, State.class))
+                Dispatch.cmd(cmd -> Match(cmd).of(
+                        Case(instanceOf(CreatePerson.class),
+                                CommandFunction.pc(StateReducerTest::createPerson, State.class)),
 
-                        .whenType(ChangeFirstName.class)
-                        .then(CommandFunction.pc(StateReducerTest::changeFirstNameEvent))),
-                Dispatch.event(Match
-                        .whenType(PersonCreated.class)
-                        .then(EventFunction.p(StateReducerTest::personCreated, State.class))
+                        Case(instanceOf(ChangeFirstName.class),
+                                CommandFunction.pc(StateReducerTest::changeFirstNameEvent)))),
+                Dispatch.event(event -> Match(event).of(
+                        Case(instanceOf(PersonCreated.class),
+                                EventFunction.p(StateReducerTest::personCreated, State.class)),
 
-                        .whenType(FirstNameChanged.class)
-                        .then(EventFunction.p(StateReducerTest::firstNameChanged))),
+                        Case(instanceOf(FirstNameChanged.class),
+                                EventFunction.p(StateReducerTest::firstNameChanged)))),
                 1));
     }
 

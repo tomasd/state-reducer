@@ -1,11 +1,12 @@
 package com.drencak.sr;
 
 import javaslang.Tuple4;
-import javaslang.control.Match;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Objects;
+
+import static javaslang.API.*;
 
 public class PredicateTest {
     public static class MyState {
@@ -74,17 +75,16 @@ public class PredicateTest {
 
     @Test
     public void testByPredicate() throws Exception {
-
-        EventFunction<MyState, MyCtx> sr = Dispatch.eventByPredicate(Match
-                .when((Tuple4<Object, MyState, MyState, MyCtx> t) -> t._2 != null && t._2.state && t._1 instanceof SetValue)
-                .then(EventFunction.p(PredicateTest::processActive, MyCtx.class))
-
-                .when((Tuple4<Object, MyState, MyState, MyCtx> t) -> t._2 != null && !t._2.state && t._1 instanceof SetValue)
-                .then(EventFunction.p(PredicateTest::processPassive))
-
-                .otherwise(Dispatch.<MyState, MyCtx>event()
-                        .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
-                        .orElse(EventFunction.i(PredicateTest::create)))
+        EventFunction<MyState, MyCtx> sr = Dispatch.eventByPredicate(tt ->
+                Match(tt).of(
+                        Case((Tuple4<Object, MyState, MyState, MyCtx> t) -> t._2 != null && t._2.state && t._1 instanceof SetValue,
+                                EventFunction.p(PredicateTest::processActive, MyCtx.class)),
+                        Case((Tuple4<Object, MyState, MyState, MyCtx> t) -> t._2 != null && !t._2.state && t._1 instanceof SetValue,
+                                EventFunction.p(PredicateTest::processPassive)),
+                        Case($(), Dispatch.<MyState, MyCtx>event()
+                                .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
+                                .orElse(EventFunction.i(PredicateTest::create)))
+                )
         );
 
 
@@ -115,20 +115,20 @@ public class PredicateTest {
 
     @Test
     public void testByState() throws Exception {
+        EventFunction<MyState, MyCtx> sr = Dispatch.eventByState(state -> {
+                    return Match(state).of(
+                            Case(PredicateTest::isPassive, Dispatch.<MyState, MyCtx>event()
+                                    .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
+                                    .on(SetValue.class, EventFunction.p(PredicateTest::processPassive, MyCtx.class))
+                                    .cast()),
+                            Case(PredicateTest::isActive, Dispatch.<MyState, MyCtx>event()
+                                    .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
+                                    .on(SetValue.class, EventFunction.p(PredicateTest::processActive, MyCtx.class))
+                                    .cast()),
 
-        EventFunction<MyState, MyCtx> sr = Dispatch.eventByState(Match
-                .when(PredicateTest::isPassive)
-                .then(Dispatch.<MyState, MyCtx>event()
-                        .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
-                        .on(SetValue.class, EventFunction.p(PredicateTest::processPassive, MyCtx.class))
-                        .cast())
-
-                .when(PredicateTest::isActive)
-                .then(Dispatch.<MyState, MyCtx>event()
-                        .on(ToggleState.class, EventFunction.i(PredicateTest::toggle))
-                        .on(SetValue.class, EventFunction.p(PredicateTest::processActive, MyCtx.class))
-                        .cast())
-                .otherwise(EventFunction.i(PredicateTest::create))
+                            Case($(), EventFunction.i(PredicateTest::create))
+                    );
+                }
         );
 
 
